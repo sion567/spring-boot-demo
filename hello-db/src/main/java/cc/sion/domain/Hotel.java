@@ -1,20 +1,21 @@
 package cc.sion.domain;
 
-import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import javax.persistence.*;
 
+import cc.sion.core.entity.Entity348;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
 
 @Entity
-public class Hotel implements Serializable {
+@Data
+@NoArgsConstructor
+public class Hotel extends Entity348 {
 
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     @Column(nullable = false)
     @NaturalId
@@ -29,22 +30,6 @@ public class Hotel implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "hotel")
     private Set<Review> reviews;
 
-    protected Hotel() {
-    }
+    private int state;
 
-    public Hotel(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getAddress() {
-        return this.address;
-    }
-
-    public String getZip() {
-        return this.zip;
-    }
 }

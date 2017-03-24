@@ -13,16 +13,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import cc.sion.core.entity.Entity348;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 @Entity
-public class Review implements Serializable {
+@Data
+@NoArgsConstructor
+public class Review extends Entity348 {
 
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     @ManyToOne(optional = false)
     private Hotel hotel;
@@ -44,46 +45,4 @@ public class Review implements Serializable {
     @Column(nullable = false, length = 5000)
     private String details;
 
-    public Review() {
-    }
-
-    public Hotel getHotel() {
-        return this.hotel;
-    }
-
-    public int getIndex() {
-        return this.index;
-    }
-
-    public Rating getRating() {
-        return this.rating;
-    }
-
-    public void setRating(Rating rating) {
-        this.rating = rating;
-    }
-
-    public Date getCheckInDate() {
-        return this.checkInDate;
-    }
-
-    public void setCheckInDate(Date checkInDate) {
-        this.checkInDate = checkInDate;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDetails() {
-        return this.details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
 }

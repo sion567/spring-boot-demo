@@ -2,8 +2,9 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="cc.sion" level="DEBUG"/>
 
-    <root level="DEBUG" />
+    <root level="INFO" />
 
     <!-- 自定义配置文件
     <springProperty scope="context" name="SYSLOG_HOST" source="logging.syslog.host" defaultValue="syslog.hostname" />
