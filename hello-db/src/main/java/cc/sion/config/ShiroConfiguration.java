@@ -1,7 +1,7 @@
 package cc.sion.config;
 
-import cc.sion.core.security.shiro.IAccountService;
-import cc.sion.core.security.shiro.ShiroDbRealm;
+import cc.sion.core.sys.biz.IUserAuthService;
+import cc.sion.core.sys.security.shiro.SysUserRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -35,7 +35,7 @@ public class ShiroConfiguration {
     @Bean(name = "realm")
     @DependsOn("lifecycleBeanPostProcessor")
     public AuthorizingRealm shiroRealm() {
-        ShiroDbRealm realm = new ShiroDbRealm();
+        SysUserRealm realm = new SysUserRealm();
         realm.setCredentialsMatcher(initCredentialsMatcher());
         return realm;
     }
@@ -44,8 +44,8 @@ public class ShiroConfiguration {
     public HashedCredentialsMatcher initCredentialsMatcher() {
         HashedCredentialsMatcher matcher = null;
 
-        matcher = new HashedCredentialsMatcher(IAccountService.HASH_ALGORITHM);
-        matcher.setHashIterations(IAccountService.HASH_INTERATIONS);
+        matcher = new HashedCredentialsMatcher(IUserAuthService.HASH_ALGORITHM);
+        matcher.setHashIterations(IUserAuthService.HASH_INTERATIONS);
         return matcher;
     }
 
@@ -61,6 +61,7 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/remote/**", "anon");
 
         filterChainDefinitionMap.put("/favicon.ico", "anon");
+        filterChainDefinitionMap.put("/sys/**", "authc,roles[sys]");
         filterChainDefinitionMap.put("/admin/**", "authc,roles[admin]");
         filterChainDefinitionMap.put("/**", "user");
 

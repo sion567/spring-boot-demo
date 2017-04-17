@@ -278,4 +278,36 @@ public class Reflections {
 		}
 		return new RuntimeException("Unexpected Checked Exception.", e);
 	}
+
+
+
+	/**
+	 * 得到指定类型的指定位置的泛型实参
+	 *
+	 * @param clazz
+	 * @param index
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> Class<T> findParameterizedType(Class<?> clazz, int index) {
+        //getSuperclass()获得该类的父类
+        //getGenericSuperclass()获得带有泛型的父类
+        //Type是 Java 编程语言中所有类型的公共高级接口。它们包括原始类型、参数化类型、数组类型、类型变量和基本类型。
+		Type type = clazz.getGenericSuperclass();
+		//CGLUB subclass target object(泛型在父类上)
+		if (!(type instanceof ParameterizedType)) {
+			type = clazz.getSuperclass().getGenericSuperclass();
+		}
+		if (!(type instanceof  ParameterizedType)) {
+			return null;
+		}
+		//ParameterizedType参数化类型，即泛型
+		ParameterizedType p=(ParameterizedType)type;
+		//getActualTypeArguments获取参数化类型的数组，泛型可能有多个
+		Type[] actualTypeArguments = p.getActualTypeArguments();
+		if (actualTypeArguments == null || actualTypeArguments.length == 0) {
+			return null;
+		}
+		return (Class<T>) actualTypeArguments[0];
+	}
 }

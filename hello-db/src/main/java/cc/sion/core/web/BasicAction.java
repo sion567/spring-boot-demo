@@ -18,6 +18,8 @@ public interface BasicAction {
 
     IBaseBiz<?, ?> getBaseBiz();
 
+    String defaultViewPrefix();
+
 //    T getObj(ID id);  不能用?
 //    List<?> findAll();  可以用?
 }

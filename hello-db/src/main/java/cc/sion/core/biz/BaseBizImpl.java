@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 
@@ -23,13 +24,12 @@ public abstract class BaseBizImpl<T,ID extends Serializable> implements IBaseBiz
     protected BaseRepository<T,ID> repository;
 
     @Override
-    public int save(T t) {
+    public T save(T t) {
         try {
-            repository.save(t);
-            return 1;
+            return repository.save(t);
         }catch (Exception e){
             log.error("save obj is error!!!",e);
-            return 0;
+            return null;
         }
     }
 
@@ -65,8 +65,31 @@ public abstract class BaseBizImpl<T,ID extends Serializable> implements IBaseBiz
 //        }
         return -1;
     }
+    public int delete(ID[] ids) {
+        for(ID id : ids)
+            delete(id);
+        return -1;
+    }
 
+    public long count(){
+        return repository.count();
+    }
+    public long count(Map<String, Object> searchParams){
+        Specification<T> spec = buildSpecification(searchParams);
+        return repository.count(spec);
+    }
 
+    public List<T> findAll(){
+        return repository.findAll();
+    }
+    public List<T> findAll(Map<String, Object> searchParams){
+        Specification<T> spec = buildSpecification(searchParams);
+        return repository.findAll(spec);
+    }
+    public List<T> findAll(Map<String, Object> searchParams, String... sortType){
+        Specification<T> spec = buildSpecification(searchParams);
+        return repository.findAll(spec,new Sort(Sort.Direction.DESC, sortType));
+    }
     @Override
     public Page<T> getByPage(Map<String, Object> searchParams, int pageNumber, int pageSize, String sortType){
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize, sortType);
@@ -82,6 +105,10 @@ public abstract class BaseBizImpl<T,ID extends Serializable> implements IBaseBiz
         Sort sort = null;
         if ("auto".equals(sortType)) {
             sort = new Sort(Sort.Direction.DESC, "id");
+        }else if("".equals(sortType)){
+            sort = new Sort(Sort.Direction.DESC, sortType);
+        }else{
+
         }
 
         return new PageRequest(pageNumber - 1, pagzSize, sort);

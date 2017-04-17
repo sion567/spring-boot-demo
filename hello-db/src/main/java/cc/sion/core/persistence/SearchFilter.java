@@ -5,12 +5,15 @@
  *******************************************************************************/
 package cc.sion.core.persistence;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
+@Slf4j
 public class SearchFilter {
 
 	public enum Operator {
@@ -37,8 +40,13 @@ public class SearchFilter {
 			// 过滤掉空值
 			String key = entry.getKey();
 			Object value = entry.getValue();
-			if (StringUtils.isBlank((String) value)) {
+			if (Objects.isNull(value)) {
 				continue;
+			}
+
+			if(log.isDebugEnabled()){
+				//EQ_userId    10086
+				log.debug("searchParams>>>key:{},value:{}",key,value);
 			}
 
 			// 拆分operator与filedAttribute

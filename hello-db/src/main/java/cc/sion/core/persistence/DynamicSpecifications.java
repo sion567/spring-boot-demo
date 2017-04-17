@@ -6,6 +6,8 @@
 package cc.sion.core.persistence;
 
 import cc.sion.core.utils.Collections3;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 public class DynamicSpecifications {
 
 	public static <T> Specification<T> bySearchFilter(final Collection<SearchFilter> filters, final Class<T> entityClazz) {
@@ -22,7 +25,7 @@ public class DynamicSpecifications {
 			public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 				if (Collections3.isNotEmpty(filters)) {
 
-					List<Predicate> predicates = new ArrayList<Predicate>();
+					List<Predicate> predicates = Lists.newArrayList();
 					for (SearchFilter filter : filters) {
 						// nested path translate, 如Task的名为"user.name"的filedName, 转换为Task.user.name属性
 						String[] names = StringUtils.split(filter.fieldName, ".");
@@ -30,7 +33,9 @@ public class DynamicSpecifications {
 						for (int i = 1; i < names.length; i++) {
 							expression = expression.get(names[i]);
 						}
-
+						if(log.isDebugEnabled()){
+							log.debug("   {}:{}",filter.operator,filter.value);
+						}
 						// logic operator
 						switch (filter.operator) {
 							case EQ:

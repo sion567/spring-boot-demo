@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 @CacheConfig(cacheNames = "ooxx")
-interface HotelRepository  extends BaseRepository<Hotel,String> {
+interface HotelRepository extends BaseRepository<Hotel,String> {
     @Cacheable(unless="#result == null")
     Hotel findByName(String name);
 
