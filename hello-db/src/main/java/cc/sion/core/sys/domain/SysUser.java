@@ -44,21 +44,13 @@ public class SysUser extends Entity348 {
     @Pattern(regexp = MOBILE_PHONE_NUMBER_PATTERN, message = "{user.mobile.phone.number.not.valid}")
     @Column(name = "mobile_phone_number")
     private String mobilePhoneNumber;
+    private String password;
 
     private String nickname;
     private String fullname;
     @Transient
-    private String plainPassword;
-    /**
-     * 使用md5(username + original password + salt)加密存储
-     */
     @Length(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH, message = "{user.password.not.valid}")
-    private String password;
-
-    /**
-     * 加密密码时使用的种子
-     */
-    private String salt;
+    private String plainPassword;
 
     /**
      * 创建时间
@@ -93,16 +85,4 @@ public class SysUser extends Entity348 {
 //        // 角色列表在数据库中实际以逗号分隔字符串存储，因此返回不能修改的List.
 //        return Collections3.copyOf(StringUtils.split(roles, ","));
 //    }
-    @Transient
-    @JsonIgnore
-    public String getCredentialSalt() {
-        return userName+salt;
-    }
-
-    /**
-     * 生成新的种子
-     */
-    public void randomSalt() {
-        setSalt(RandomStringUtils.randomAlphanumeric(10));
-    }
 }

@@ -22,10 +22,12 @@ public class SysResourceServiceImpl extends BaseBizImpl<SysResource,String> impl
 
     @Autowired
     private IUserAuthService userAuthService;
-    @Autowired
-    private SysResourceDAO sysResourceDAO;
 
-
+    /**
+     * 得到真实的资源标识  即 父亲:儿子
+     * @param resource
+     * @return
+     */
     public String findActualResourceIdentity(SysResource resource) {
         if(resource == null) {
             return null;
@@ -34,6 +36,7 @@ public class SysResourceServiceImpl extends BaseBizImpl<SysResource,String> impl
 
         boolean hasResourceIdentity = !StringUtils.isEmpty(resource.getIdentity());
 
+        //
         SysResource parent = getObj(resource.getParentId());
         while(parent != null) {
             if(!StringUtils.isEmpty(parent.getIdentity())) {
@@ -68,9 +71,7 @@ public class SysResourceServiceImpl extends BaseBizImpl<SysResource,String> impl
     }
 
     public List<Menu> findMenus(SysUser user) {
-        Map<String, Object> searchParams = Maps.newHashMap();
-        searchParams.put("EQ_show",true);
-        List<SysResource> resources = findAll(searchParams,"parentId", "weight");
+        List<SysResource> resources = findAll(Collections.singletonMap("EQ_show",true),"parentId", "weight");
 
         Set<String> userPermissions = userAuthService.findStringPermissions(user);
 
@@ -104,7 +105,6 @@ public class SysResourceServiceImpl extends BaseBizImpl<SysResource,String> impl
         if(permissionResourceIdentity.startsWith(actualResourceIdentity)) {
             return true;
         }
-
 
         //模式匹配
         WildcardPermission p1 = new WildcardPermission(permissionResourceIdentity);

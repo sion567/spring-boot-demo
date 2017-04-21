@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cc.sion.domain;
 
-public interface HotelSummary {
+package cc.sion.service;
 
-    City getCity();
 
-    String getName();
+import cc.sion.domain.Hotel;
+import cc.sion.domain.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.Repository;
 
-    Double getAverageRating();
+interface ReviewRepository extends Repository<Review, Long> {
 
-    default Integer getAverageRatingRounded() {
-        return getAverageRating() == null ? null : (int) Math.round(getAverageRating());
-    }
+    Page<Review> findByHotel(Hotel hotel, Pageable pageable);
+
+    Review findByHotelAndIndex(Hotel hotel, int index);
+
+    Review save(Review review);
 
 }

@@ -1,7 +1,7 @@
 package cc.sion.core.sys.domain;
 
 import cc.sion.core.entity.Entity348;
-import cc.sion.core.entity.Treeable;
+import cc.sion.core.entity.ZTreeable;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Formula;
@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "sys_resource")
-public class SysResource extends Entity348 implements Treeable<String> {
+public class SysResource extends Entity348 implements ZTreeable<String> {
 
     private String name;
     /**
@@ -33,18 +33,15 @@ public class SysResource extends Entity348 implements Treeable<String> {
     private String parentIds;
 
     private Integer weight;
-
     /**
      * 图标
      */
     private String icon;
-
     /**
      * 是否有叶子节点
      */
-    @Formula(value = "(select count(*) from sys_resource f_t where f_t.parent_id = id)")
+    @Formula(value = "(select count(*) from sys_resource s_r where s_r.parent_id = id)")
     private boolean hasChildren;
-
     /**
      * 是否显示
      */
@@ -106,39 +103,7 @@ public class SysResource extends Entity348 implements Treeable<String> {
         if (isHasChildren()) {
             return false;
         }
-
         return true;
     }
-
-    /**
-     * 根节点默认图标 如果没有默认 空即可
-     *
-     * @return
-     */
-    @Override
-    public String getRootDefaultIcon() {
-        return "ztree_setting";
-    }
-
-    /**
-     * 树枝节点默认图标 如果没有默认 空即可
-     *
-     * @return
-     */
-    @Override
-    public String getBranchDefaultIcon() {
-        return "ztree_folder";
-    }
-
-    /**
-     * 树叶节点默认图标 如果没有默认 空即可
-     *
-     * @return
-     */
-    @Override
-    public String getLeafDefaultIcon() {
-        return "ztree_file";
-    }
-
 
 }

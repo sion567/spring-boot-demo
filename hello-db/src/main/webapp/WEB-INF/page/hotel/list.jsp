@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <html>
@@ -40,7 +41,9 @@
             <div class="span12">
                 <div class="table-toolbar">
                     <div class="btn-group">
-                        <a href="${ctx}/admin/hotel/input/0"><button class="btn btn-success">Add New <i class="icon-plus icon-white"></i></button></a>
+                        <shiro:hasPermission name="hotel:create">
+                            <a href="${ctx}/admin/hotel/input/0"><button class="btn btn-success">Add New <i class="icon-plus icon-white"></i></button></a>
+                        </shiro:hasPermission>
                     </div>
                     <div class="btn-group pull-right">
                         <button data-toggle="dropdown" class="btn dropdown-toggle">Tools <span class="caret"></span></button>

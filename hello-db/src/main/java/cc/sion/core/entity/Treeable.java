@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * <p>实体实现该接口表示想要实现树结构
  */
-public interface  Treeable <ID extends Serializable> {
+public interface Treeable <ID extends Serializable> {
 
     void setName(String name);
 
@@ -96,6 +96,4 @@ public interface  Treeable <ID extends Serializable> {
      * 树叶节点默认图标 如果没有默认 空即可  大小为16×16
      */
     String getLeafDefaultIcon();
-
-
 }

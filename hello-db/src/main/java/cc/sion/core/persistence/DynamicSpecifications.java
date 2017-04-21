@@ -33,9 +33,9 @@ public class DynamicSpecifications {
 						for (int i = 1; i < names.length; i++) {
 							expression = expression.get(names[i]);
 						}
-						if(log.isDebugEnabled()){
-							log.debug("   {}:{}",filter.operator,filter.value);
-						}
+//						if(log.isDebugEnabled()){
+//							log.debug("   {}-{}-{}",names[0],filter.operator,filter.value);
+//						}
 						// logic operator
 						switch (filter.operator) {
 							case EQ:

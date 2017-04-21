@@ -4,14 +4,16 @@ import cc.sion.core.sys.biz.ISysUserService;
 import cc.sion.core.sys.biz.IUserAuthService;
 import cc.sion.core.sys.domain.SysUser;
 import cc.sion.core.sys.security.exception.*;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Slf4j
 public class SysUserRealm extends AuthorizingRealm {
@@ -20,7 +22,6 @@ public class SysUserRealm extends AuthorizingRealm {
     private ISysUserService sysUserService;
     @Autowired
     private IUserAuthService userAuthService;
-
 
 //	/**
 //	 * 真正的校验
@@ -34,30 +35,30 @@ public class SysUserRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         String username = principals.getPrimaryPrincipal().toString();//得到主要的身份
+        log.info("-------------principals:{}",username);
         SysUser user = sysUserService.findByUserName(username);
-
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+
         authorizationInfo.setRoles(userAuthService.findStringRoles(user));
         authorizationInfo.setStringPermissions(userAuthService.findStringPermissions(user));
-
         return authorizationInfo;
     }
 
     /*
- * 认证回调函数,登录时调用.
- */
+     * 认证回调函数,登录时调用.
+     */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        UsernamePasswordToken upToken = (UsernamePasswordToken) token;
-        String username = upToken.getUsername().trim();
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
+        UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
+        String username = token.getUsername().trim();
         String password = "";
-        if (upToken.getPassword() != null) {
-            password = new String(upToken.getPassword());
+        if (token.getPassword() != null) {
+            password = new String(token.getPassword());
         }
 
         SysUser user = null;
         try {
-            log.debug("user:{},pwd:{}",username,"******");
+            log.debug("------user:{},pwd:{}",username,password);
             user = sysUserService.login(username, password);
         } catch (UserNotExistsException e) {
             log.error("user not exist",e);
@@ -77,11 +78,10 @@ public class SysUserRealm extends AuthorizingRealm {
         }
 
         if (user != null) {
-            log.debug("---user name:{}", user.getUserName());
+            log.debug("======user name:{},pwd:{}", user.getUserName(),user.getPassword());
             return new SimpleAuthenticationInfo(
-                    username,//用户名
-                    user.getPassword(),//密码
-                    ByteSource.Util.bytes(user.getCredentialSalt()),//salt=username+salt
+                    token.getUsername(),//用户名
+                    user.getPassword(),//加密后密码
                     getName());//realm name
         } else {
             return null;

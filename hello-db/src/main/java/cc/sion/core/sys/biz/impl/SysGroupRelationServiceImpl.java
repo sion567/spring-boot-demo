@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -37,7 +38,7 @@ public class SysGroupRelationServiceImpl extends BaseBizImpl<SysGroupRelation,St
     }
 
     public Set<String> findGroupIds(String userId) {
-        return Sets.newHashSet(sysGroupRelationDAO.findGroupIds(userId));
+        return sysGroupRelationDAO.findGroupIds(userId);
     }
 
 

@@ -8,11 +8,13 @@ import cc.sion.core.sys.dao.SysAuthDAO;
 import cc.sion.core.sys.domain.SysAuth;
 import cc.sion.core.sys.domain.SysGroup;
 import cc.sion.core.sys.domain.SysUser;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -84,6 +86,11 @@ public class SysAuthServiceImpl extends BaseBizImpl<SysAuth,String> implements I
      */
     @Override
     public Set<String> findRoleIds(String userId, Set<String> groupIds) {
-        return sysAuthDAO.findRoleIds(userId, groupIds);
+        Set<String> set = Sets.newHashSet();
+        List<SysAuth> list = sysAuthDAO.findRoleIds(userId, groupIds);
+        for(SysAuth auth : list){
+            set.addAll(auth.getRoleIds());
+        }
+        return set;
     }
 }

@@ -16,20 +16,14 @@
 package cc.sion.domain;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
-import org.hibernate.annotations.NaturalId;
 
 @Entity
-public class Hotel implements Serializable {
+public class City implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -37,44 +31,45 @@ public class Hotel implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
-    @NaturalId
-    private City city;
-
     @Column(nullable = false)
-    @NaturalId
     private String name;
 
     @Column(nullable = false)
-    private String address;
+    private String state;
 
     @Column(nullable = false)
-    private String zip;
+    private String country;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "hotel")
-    private Set<Review> reviews;
+    @Column(nullable = false)
+    private String map;
 
-    protected Hotel() {
+    protected City() {
     }
 
-    public Hotel(City city, String name) {
-        this.city = city;
+    public City(String name, String country) {
+        super();
         this.name = name;
-    }
-
-    public City getCity() {
-        return this.city;
+        this.country = country;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public String getAddress() {
-        return this.address;
+    public String getState() {
+        return this.state;
     }
 
-    public String getZip() {
-        return this.zip;
+    public String getCountry() {
+        return this.country;
+    }
+
+    public String getMap() {
+        return this.map;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "," + getState() + "," + getCountry();
     }
 }

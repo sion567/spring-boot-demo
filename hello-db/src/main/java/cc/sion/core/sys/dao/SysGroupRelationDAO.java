@@ -13,7 +13,7 @@ public interface SysGroupRelationDAO extends BaseRepository<SysGroupRelation,Str
     SysGroupRelation findByGroupIdAndUserId(String groupId, String userId);
 
     @Query("select groupId from SysGroupRelation where userId=?1")
-    List<String> findGroupIds(String userId);
+    Set<String> findGroupIds(String userId);
 
 
     //无需删除用户 因为用户并不逻辑删除

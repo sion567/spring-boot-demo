@@ -2,12 +2,14 @@ package cc.sion.core.sys.domain;
 
 import cc.sion.core.entity.Entity348;
 import cc.sion.core.sys.domain.type.CollectionToStringUserType;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -61,6 +63,7 @@ public class SysAuth extends Entity348 {
 
     @Enumerated(EnumType.STRING)
     private AuthType type;
+
     public Set<String> getRoleIds() {
         if (roleIds == null) {
             roleIds = Sets.newHashSet();

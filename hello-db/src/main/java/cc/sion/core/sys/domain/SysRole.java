@@ -1,12 +1,15 @@
 package cc.sion.core.sys.domain;
 
 import cc.sion.core.entity.Entity348;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -34,7 +37,7 @@ public class SysRole extends Entity348{
     @Fetch(FetchMode.SELECT)
     @Basic(optional = true, fetch = FetchType.EAGER)
     @OrderBy
-    private List<SysRoleResourcePermission> resourcePermissions;
+    private List<SysRoleResourcePermission> resourcePermissions ;
 
     /**
      * 是否显示 也表示是否可用 为了统一 都使用这个
@@ -45,5 +48,11 @@ public class SysRole extends Entity348{
     public void addResourcePermission(SysRoleResourcePermission roleResourcePermission) {
         roleResourcePermission.setRole(this);
         getResourcePermissions().add(roleResourcePermission);
+    }
+    public List<SysRoleResourcePermission> getResourcePermissions() {
+        if (resourcePermissions == null) {
+            resourcePermissions = Lists.newArrayList();
+        }
+        return resourcePermissions;
     }
 }

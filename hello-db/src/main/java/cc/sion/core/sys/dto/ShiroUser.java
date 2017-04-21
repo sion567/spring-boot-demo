@@ -1,4 +1,4 @@
-package cc.sion.core.security.shiro;
+package cc.sion.core.sys.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

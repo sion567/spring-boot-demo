@@ -13,8 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cc.sion.domain;
 
-public enum Rating {
-    TERRIBLE, POOR, AVERAGE, GOOD, EXCELLENT,
+package cc.sion.service;
+
+import cc.sion.domain.City;
+import cc.sion.domain.Hotel;
+import cc.sion.domain.Review;
+import cc.sion.domain.ReviewDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+public interface HotelService {
+
+    Hotel getHotel(City city, String name);
+
+    Page<Review> getReviews(Hotel hotel, Pageable pageable);
+
+    Review getReview(Hotel hotel, int index);
+
+    Review addReview(Hotel hotel, ReviewDetails details);
+
+    ReviewsSummary getReviewSummary(Hotel hotel);
+
 }

@@ -2,18 +2,15 @@ package cc.sion.core.sys.biz.impl;
 
 
 import cc.sion.core.biz.BaseBizImpl;
-import cc.sion.core.security.shiro.ShiroUser;
 import cc.sion.core.sys.biz.ISysUserService;
 import cc.sion.core.sys.biz.ISysUserStatusHistoryService;
-import cc.sion.core.sys.biz.IUserAuthService;
 import cc.sion.core.sys.dao.SysUserDAO;
 import cc.sion.core.sys.domain.SysUser;
 import cc.sion.core.sys.domain.UserStatus;
+import cc.sion.core.sys.dto.ShiroUser;
+import cc.sion.core.sys.security.LoginCacheManager;
 import cc.sion.core.sys.security.exception.*;
-import cc.sion.core.utils.Digests;
-import cc.sion.core.utils.Encodes;
 import cc.sion.core.utils.LogUtils;
-import cc.sion.core.utils.Md5Utils;
 import cc.sion.utils.IpUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -22,6 +19,8 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.credential.PasswordService;
+import org.ehcache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
@@ -36,14 +35,16 @@ import java.util.Set;
 @Slf4j
 public class SysUserServiceImpl extends BaseBizImpl<SysUser,String> implements ISysUserService {
 
-    private static final String USER_NAME = "sysadmin";
-
     @Autowired
     private SysUserDAO sysUserDAO;
 
     @Autowired
     private ISysUserStatusHistoryService sysUserStatusHistoryService;
+    @Autowired
+    private PasswordService passwordService;
 
+    //    @Value(value = "${user.password.maxRetryCount}")
+    private int maxRetryCount = 5;
 
     @Override
     public SysUser login(String name, String password) {
@@ -89,7 +90,7 @@ public class SysUserServiceImpl extends BaseBizImpl<SysUser,String> implements I
         }
 
         validate(user, password);
-
+        log.debug("validate user success.");
         if (user.getStatus() == UserStatus.blocked) {
             log(
                     name,
@@ -104,16 +105,32 @@ public class SysUserServiceImpl extends BaseBizImpl<SysUser,String> implements I
         return user;
     }
 
-    public boolean validate(SysUser user, String newPassword) {
-        //问题，可以根据邮件，手机，用户名登录，但是密码就只有用户名属性
-//        String oldPassword = user.getPassword();
-//        user.setPlainPassword(newPassword);
-//        return oldPassword.equals(encryptPassword(user));
-        return true;
+    public void validate(SysUser user, String password) {
+        String name = user.getUserName();
+        Integer retryCount = LoginCacheManager.getCache(name);
+        log.debug("retryCount:{}",retryCount);
+        if (retryCount >= maxRetryCount) {
+            log(
+                    name,
+                    "passwordError",
+                    "password error, retry limit exceed! password: {},max retry count {}",
+                    password, maxRetryCount);
+            throw new UserPasswordRetryLimitExceedException(maxRetryCount);
+        }
+        log.debug("pwd1:{}",user.getPassword());
+        log.debug("pwd2:{}",password);
+        if (!passwordService.passwordsMatch(password,user.getPassword())) {
+            LoginCacheManager.setCache(name, ++retryCount);
+            log(
+                    name,
+                    "passwordError",
+                    "password error! password: {} retry count: {}",
+                    password, retryCount);
+            throw new UserPasswordNotMatchException();
+        } else {
+            LoginCacheManager.removeCache(name);
+        }
     }
-
-
-
 
 
     /**
@@ -131,33 +148,13 @@ public class SysUserServiceImpl extends BaseBizImpl<SysUser,String> implements I
         return user.loginName;
     }
 
-    protected String encryptPassword(SysUser user) {
-        return encryptPassword(user,"md5");
-    }
-    protected String encryptPassword(SysUser user,String f) {
-        String _encrypt_pwd_ = "";
-        if("md5".equals(f.toLowerCase())){
-            //md5
-            _encrypt_pwd_ = Md5Utils.hash(user.getUserName() + user.getPlainPassword() + user.getSalt());
-        }else{
-            //生成随机的salt并经过1024次 sha-1 hash
-            byte[] salt = Digests.generateSalt(SALT_SIZE);
-            user.setSalt(Encodes.encodeHex(salt));
 
-            byte[] hashPassword = Digests.sha1(user.getPlainPassword().getBytes(), salt, IUserAuthService.HASH_INTERATIONS);
-            _encrypt_pwd_ = Encodes.encodeHex(hashPassword);
-        }
-        return _encrypt_pwd_;
-    }
 
     @Override
     public SysUser saveUser(SysUser obj) {
         if (obj.getRegisterDate() == null)
             obj.setRegisterDate(new Date());
-
-        obj.randomSalt();
-        obj.setPassword(encryptPassword(obj));
-
+        obj.setPassword(passwordService.encryptPassword(obj.getPlainPassword()));
         return super.save(obj);
     }
 
@@ -187,8 +184,7 @@ public class SysUserServiceImpl extends BaseBizImpl<SysUser,String> implements I
 
     @Override
     public SysUser changePassword(SysUser user, String newPassword) {
-        user.randomSalt();
-        user.setPassword(encryptPassword(user));
+        user.setPassword(passwordService.encryptPassword(newPassword));
         return saveUser(user);
     }
     public void changePassword(SysUser opUser, String[] ids, String newPassword) {
@@ -291,7 +287,7 @@ public class SysUserServiceImpl extends BaseBizImpl<SysUser,String> implements I
     public static Object getIp() {
         RequestAttributes requestAttributes = null;
         try {
-            RequestContextHolder.currentRequestAttributes();
+            requestAttributes = RequestContextHolder.currentRequestAttributes();
         } catch (Exception e) {
             //FIXME:ignore  如unit test
         }

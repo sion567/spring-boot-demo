@@ -1,3 +1,5 @@
+package cc.sion.domain;
+
 /*
  * Copyright 2012-2016 the original author or authors.
  *
@@ -13,18 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cc.sion.domain;
 
-public interface HotelSummary {
+public interface RatingCount {
 
-    City getCity();
+    Rating getRating();
 
-    String getName();
-
-    Double getAverageRating();
-
-    default Integer getAverageRatingRounded() {
-        return getAverageRating() == null ? null : (int) Math.round(getAverageRating());
-    }
+    long getCount();
 
 }
