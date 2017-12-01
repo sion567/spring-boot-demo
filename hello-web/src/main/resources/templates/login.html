@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Admin Login</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" media="screen" th:href="@{/public/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" media="screen" th:href="@{/public/bootstrap/css/bootstrap-responsive.min.css}"/>
+    <link rel="stylesheet" media="screen" th:href="@{/public/assets/styles.css}"/>
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script th:src="@{/public/vendor/html5.js}"></script>
+    <![endif]-->
+    <script th:src="@{/public/vendors/modernizr-2.6.2-respond-1.1.0.min.js}"></script>
+</head>
+<body id="login">
+<div class="container">
+
+    <form class="form-signin" th:action="@{/login}" method="post">
+
+        <div th:if="${error != null}" class="alert alert-error input-medium controls">
+            <button class="close" data-dismiss="alert">×</button>登录失败，请重试.
+        </div>
+
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <input id="username" name="username" type="text" class="input-block-level" placeholder="Email address">
+        <input id="password" name="password" type="password" class="input-block-level" placeholder="Password">
+        <label class="checkbox">
+            <input type="checkbox" id="rememberMe" name="rememberMe"> Remember me
+        </label>
+        <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+    </form>
+
+</div> <!-- /container -->
+<script th:src="@{/public/vendors/jquery-1.9.1.min.js}"></script>
+<script th:src="@{/public/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <property name="LOG_HOME" value="${catalina.base}/logs/manage"/>
+
+    <logger name="cc.sion" level="DEBUG"/>
+    <logger name="org.springframework" level="WARN"/>
+
+    <jmxConfigurator/>
+</configuration>

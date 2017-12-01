@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: hello-web
+  thymeleaf:
+    cache: true
